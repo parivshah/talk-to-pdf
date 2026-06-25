@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.chroma/
+.bm25/
+uploads/
+.env
+frontend/node_modules/
+frontend/dist/
