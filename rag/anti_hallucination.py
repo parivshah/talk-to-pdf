@@ -1,6 +1,6 @@
 """Relevance gates so out-of-scope questions are declined instead of hallucinated."""
 
-from rag.config import MAX_SEMANTIC_DISTANCE, MIN_BM25_SCORE
+from rag.config import MAX_SEMANTIC_DISTANCE, MIN_BM25_SCORE, STRONG_SEMANTIC_DISTANCE
 
 REFUSAL_MESSAGE = (
     "I cannot answer that question based on the uploaded document. "
@@ -12,6 +12,7 @@ REFUSAL_MESSAGE = (
 def assess_relevance(
     chunks: list[dict],
     *,
+    strong_distance: float = STRONG_SEMANTIC_DISTANCE,
     max_distance: float = MAX_SEMANTIC_DISTANCE,
     min_bm25: float = MIN_BM25_SCORE,
 ) -> tuple[bool, str]:
@@ -19,7 +20,12 @@ def assess_relevance(
         return False, REFUSAL_MESSAGE
 
     distances = [chunk["distance"] for chunk in chunks if chunk.get("distance") is not None]
-    if distances and min(distances) > max_distance:
+    best_distance = min(distances) if distances else float("inf")
+
+    if best_distance <= strong_distance:
+        return True, ""
+
+    if best_distance > max_distance:
         return False, REFUSAL_MESSAGE
 
     bm25_scores = [chunk["bm25_score"] for chunk in chunks if chunk.get("bm25_score") is not None]
