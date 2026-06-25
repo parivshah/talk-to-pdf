@@ -80,14 +80,14 @@ python main.py status
 
 ## Architecture
 
+![System architecture](docs/architecture-diagram.png)
+
+See **[docs/architecture.md](docs/architecture.md)** for full Mermaid diagrams (system overview, upload flow, ask flow, hybrid retrieval).
+
 ```
-React UI
-  │  POST /api/documents/upload
-  │  POST /api/chat/ask
-  ▼
-FastAPI (api/main.py)
-  ├── IngestService  → PDF → chunk → embed → ChromaDB + BM25
-  └── ChatService    → retrieve → anti-hallucination → Ollama llama3
+React UI → FastAPI (api/main.py)
+            ├── IngestService  → PDF → chunk → embed → ChromaDB + BM25
+            └── ChatService    → retrieve → anti-hallucination → Ollama llama3
 
 Question → semantic top-20 → BM25 rerank → top-4 → Llama 3
 ```
